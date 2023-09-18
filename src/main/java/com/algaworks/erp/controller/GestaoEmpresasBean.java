@@ -13,6 +13,7 @@ import com.algaworks.erp.model.RamoAtividade;
 import com.algaworks.erp.model.TipoEmpresa;
 import com.algaworks.erp.repository.Empresas;
 import com.algaworks.erp.repository.RamoAtividades;
+import com.algaworks.erp.service.CadastroEmpresaService;
 import com.algaworks.erp.util.FacesMessages;
 
 @Named
@@ -30,11 +31,34 @@ public class GestaoEmpresasBean implements Serializable{
 	@Inject
     private RamoAtividades ramoAtividades;
 	
+	@Inject
+	private CadastroEmpresaService cadastroEmpresaService;
+	
+	private boolean jaHouvePesquisa( ) {
+		return termoPesquisa != null && !"".equals(termoPesquisa);
+	}
+	
 	private List<Empresa> listaEmpresas;
 	
 	private String termoPesquisa;
 	
 	private Converter ramoAtividadeConverter;
+	
+	private Empresa empresa;
+	
+	public void prepararNovaEmpresa() {
+		empresa = new Empresa();
+	}
+	
+	public void salvar() {
+		cadastroEmpresaService.salvar(empresa);
+		
+		if (jaHouvePesquisa()) {
+			pesquisar();
+		}
+		
+		messages.info("Empresa cadastrada com sucesso");
+	}
 	
 	public void pesquisar() {
 		listaEmpresas = empresas.pesquisar(termoPesquisa);
@@ -76,6 +100,10 @@ public class GestaoEmpresasBean implements Serializable{
 	
 	public Converter getRamoAtividadeConverter() {
 		return ramoAtividadeConverter;
+	}
+	
+	public Empresa getEmpresa() {
+		return empresa;
 	}
 	
 }
